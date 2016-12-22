@@ -40,15 +40,16 @@ Options:
     -v, --verbose            verbose logging
     -s, --silent             silent
     -u, --username=USERNAME  username
-    --foregroundcolor=COLOR  foreground color               [default: ffffff]
-    --backgroundcolor=COLOR  background color               [default: 3861aa]
-    --paneltext=TEXT         panel text                     [default: UCOM]
-    --windowframe=BOOL       include window frame           [default: false]
-    --setposition=BOOL       set launcher position          [default: true]
+    --foregroundcolor=COLOR  foreground color         [default: ffffff]
+    --backgroundcolor=COLOR  background color         [default: 3861aa]
+    --paneltext=TEXT         panel text               [default: UCOM]
+    --windowframe=BOOL       include window frame     [default: false]
+    --setposition=BOOL       set launcher position    [default: true]
+    --screennumber=NUMBER    set launch screen number [default: -1]
 """
 
 name    = "UCOM-panel"
-version = "2016-12-22T0210Z"
+version = "2016-12-22T0247Z"
 logo    = None
 
 import docopt
@@ -79,9 +80,14 @@ def main(options):
     program.panel_text     = options["--paneltext"]
     program.window_frame   = options["--windowframe"].lower() == "true"
     program.set_position   = options["--setposition"].lower() == "true"
+    program.screen_number  = int(options["--screennumber"])
 
     application = QtGui.QApplication(sys.argv)
-    panel  = Panel()
+    panel = Panel()
+    panel.move(
+        application.desktop().screenGeometry(program.screen_number).left(),
+        application.desktop().screenGeometry(program.screen_number).top()
+    )
     sys.exit(application.exec_())
 
 class Panel(QtGui.QWidget):
