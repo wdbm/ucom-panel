@@ -44,12 +44,13 @@ Options:
     --backgroundcolor=COLOR  background color         [default: 3861aa]
     --paneltext=TEXT         panel text               [default: UCOM]
     --windowframe=BOOL       include window frame     [default: false]
+    --alwaysontop=BOOL       set always on top        [default: true]
     --setposition=BOOL       set launcher position    [default: true]
     --screennumber=NUMBER    set launch screen number [default: -1]
 """
 
 name    = "UCOM-panel"
-version = "2016-12-22T0247Z"
+version = "2016-12-22T0347Z"
 logo    = None
 
 import docopt
@@ -75,12 +76,13 @@ def main(options):
     global log
     from propyte import log
 
-    program.color_1        = options["--foregroundcolor"]
-    program.color_2        = options["--backgroundcolor"]
-    program.panel_text     = options["--paneltext"]
-    program.window_frame   = options["--windowframe"].lower() == "true"
-    program.set_position   = options["--setposition"].lower() == "true"
-    program.screen_number  = int(options["--screennumber"])
+    program.color_1           = options["--foregroundcolor"]
+    program.color_2           = options["--backgroundcolor"]
+    program.panel_text        = options["--paneltext"]
+    program.window_frame      = options["--windowframe"].lower() == "true"
+    program.set_always_on_top = options["--alwaysontop"].lower() == "true"
+    program.set_position      = options["--setposition"].lower() == "true"
+    program.screen_number     = int(options["--screennumber"])
 
     application = QtGui.QApplication(sys.argv)
     panel = Panel()
@@ -214,12 +216,12 @@ class Panel(QtGui.QWidget):
             )
         )
 
+        if program.set_always_on_top is True:
+            self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         if program.window_frame is False:
             self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-
         if program.set_position is True:
             self.move(0, 0)
-
         self.resize(QtGui.QDesktopWidget().screenGeometry().width(), 15)
 
         thread_clock = threading.Thread(
