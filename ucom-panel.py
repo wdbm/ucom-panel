@@ -50,7 +50,7 @@ Options:
 """
 
 name    = "UCOM-panel"
-version = "2016-12-22T0347Z"
+version = "2016-12-23T0356Z"
 logo    = None
 
 import docopt
@@ -101,6 +101,8 @@ class Panel(QtGui.QWidget):
 
         self.text_panel = QtGui.QLabel(program.panel_text)
 
+        self.indicator_percentage_power = QtGui.QLabel(self)
+
         self.indicator_clock = QtGui.QLabel(self)
 
         self.menu = QtGui.QMenu(self)
@@ -120,8 +122,10 @@ class Panel(QtGui.QWidget):
         if program.panel_text != "":
             hbox.addWidget(self.text_panel)
         hbox.addStretch(1)
+        hbox.addWidget(self.indicator_percentage_power)
+        hbox.addSpacing(30)
         hbox.addWidget(self.indicator_clock)
-        hbox.addStretch(1)
+        hbox.addSpacing(30)
         hbox.addWidget(self.button_menu)
         self.setLayout(hbox)
 
@@ -136,6 +140,21 @@ class Panel(QtGui.QWidget):
         )
 
         self.text_panel.setStyleSheet(
+            """
+            QLabel{{
+                color: #{color_1};
+                background-color: #{color_2};
+                /*
+                border: 1px solid #{color_1};
+                */
+            }}
+            """.format(
+                color_1 = program.color_1,
+                color_2 = program.color_2
+            )
+        )
+
+        self.indicator_percentage_power.setStyleSheet(
             """
             QLabel{{
                 color: #{color_1};
@@ -224,6 +243,12 @@ class Panel(QtGui.QWidget):
             self.move(0, 0)
         self.resize(QtGui.QDesktopWidget().screenGeometry().width(), 15)
 
+        thread_percentage_power = threading.Thread(
+            target = self.percentage_power
+        )
+        thread_percentage_power.daemon = True
+        thread_percentage_power.start()
+
         thread_clock = threading.Thread(
             target = self.clock
         )
@@ -251,6 +276,18 @@ class Panel(QtGui.QWidget):
             engage_command("systemctl reboot")
         if action_text == "shut down":
             engage_command("systemctl poweroff")
+
+    def percentage_power(
+        self
+        ):
+        while True:
+            percentage_power = shijian.percentage_power()
+            if percentage_power is None:
+                percentage_power = "100%"
+            self.indicator_percentage_power.setText(
+                percentage_power
+            )
+            time.sleep(30)
 
     def clock(
         self
