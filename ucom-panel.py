@@ -50,7 +50,7 @@ Options:
 """
 
 name    = "UCOM-panel"
-version = "2016-12-23T0356Z"
+version = "2016-12-23T0400Z"
 logo    = None
 
 import docopt
@@ -263,19 +263,19 @@ class Panel(QtGui.QWidget):
         ):
         action_text = action.text()
         if action_text == "Openbox Configuration Manager":
-            engage_command("obconf")
+            shijian.engage_command("obconf")
         if action_text == "unity-control-center":
-            engage_command("unity-control-center")
+            shijian.engage_command("unity-control-center")
         if action_text == "close panel":
             program.terminate()
         if action_text == "suspend":
-            engage_command("systemctl suspend")
+            shijian.engage_command("systemctl suspend")
         if action_text == "hibernate":
-            engage_command("systemctl hibernate")
+            shijian.engage_command("systemctl hibernate")
         if action_text == "reboot":
-            engage_command("systemctl reboot")
+            shijian.engage_command("systemctl reboot")
         if action_text == "shut down":
-            engage_command("systemctl poweroff")
+            shijian.engage_command("systemctl poweroff")
 
     def percentage_power(
         self
@@ -299,17 +299,6 @@ class Panel(QtGui.QWidget):
                 )
             )
             time.sleep(1)
-
-def engage_command(
-    command = None
-    ):
-    process = subprocess.Popen(
-        [command],
-        shell      = True,
-        executable = "/bin/bash")
-    process.wait()
-    output, errors = process.communicate()
-    return output
 
 if __name__ == "__main__":
     options = docopt.docopt(__doc__)
