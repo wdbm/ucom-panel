@@ -50,7 +50,7 @@ Options:
 """
 
 name    = "UCOM-panel"
-version = "2016-12-22T0347Z"
+version = "2016-12-23T0307Z"
 logo    = None
 
 import docopt
@@ -269,7 +269,8 @@ def engage_command(
     process = subprocess.Popen(
         [command],
         shell      = True,
-        executable = "/bin/bash")
+        executable = "/bin/bash"
+    )
     process.wait()
     output, errors = process.communicate()
     return output
